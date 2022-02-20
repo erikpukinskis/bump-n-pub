@@ -30,6 +30,6 @@ fi
 
 git commit -m "v`npm version $arg`"
 npx json -f package.json -I -e "delete this.devDependencies"
-npm publish --access public
+npm publish
 git checkout -- package.json
 git push
