@@ -1,7 +1,9 @@
 #/bin/bash
 arg=$1
 
-ps -p $$
+if npm whoami > /dev/null 2>&1; echo $? | grep -Eq '1'; then
+  npm adduser
+fi
 
 usage () {
   echo ""
@@ -23,7 +25,7 @@ if echo $arg | grep -Eqv '^(major|minor|patch|premajor|preminor|prepatch|prerele
 fi
 
 
-if git diff --stat | grep -E '.'; then
+if git diff --stat | grep -E '.' > /dev/null; then
   echo "Error: Working directory must be clean to bump'n'pub"
   git diff --stat
   exit 1
