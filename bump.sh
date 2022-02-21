@@ -1,7 +1,7 @@
 #/bin/bash
 arg=$1
 
-function usage {
+usage () {
   echo ""
   echo "Usage:"
   echo "npx bump-n-sub [major | minor | patch | premajor | preminor | prepatch | prerelease]"
@@ -27,6 +27,8 @@ if [[ $(git diff --stat) != '' ]]; then
   git diff --stat
   exit 1
 fi
+
+
 
 git commit -m "v`npm version $arg`"
 npx json -f package.json -I -e "delete this.devDependencies"
