@@ -19,3 +19,6 @@ npx bump-n-pub [major | minor | patch | premajor | preminor | prepatch | prerele
     - Commits that change
 4. Runs npm publish
 5. Runs git push
+
+### Future
+- [ ] Push git tags
