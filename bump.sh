@@ -84,7 +84,7 @@ fi
 version="v`npm version $newversion`"
 
 git commit -m $version
-git tag -a $version
+git tag $version
 npx json -f package.json -I -e "delete this.devDependencies"
 npm publish
 git checkout -- package.json
