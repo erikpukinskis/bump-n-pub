@@ -62,8 +62,6 @@ function prepare_for_github {
 function prepare_for_npm {
   echo "Preparing to publish packge to npmjs.com..."
 
-  npm login
-
   if npm whoami > /dev/null 2>&1; echo $? | grep -Eq '1'; then
     npm adduser
   fi
@@ -81,7 +79,7 @@ else
   prepare_for_npm
 fi
 
-version="v`npm version $newversion`"
+version=`npm version $newversion`
 
 git commit -m $version
 git tag $version
@@ -89,4 +87,4 @@ npx json -f package.json -I -e "delete this.devDependencies"
 npm publish
 git checkout -- package.json
 git push
-git push origin version
+git push origin $version
