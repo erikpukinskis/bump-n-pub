@@ -6,7 +6,7 @@ arg_count=$#
 ##################
 # Helper functions
 
-function usage {
+usage () {
   echo ""
   echo "Publish to npmjs.com:"
   echo "npx bump-n-pub [major | minor | patch | premajor | preminor | prepatch | prerelease]"
@@ -15,7 +15,7 @@ function usage {
   echo "npx bump-n-pub [major | minor etc...] --github"
 }
 
-function generic_validation {
+generic_validation () {
   if [ $arg_count -eq 0 ]; then
     echo "Error: Must provide a level"
     usage
@@ -44,7 +44,7 @@ function generic_validation {
   fi
 }
 
-function prepare_for_github {
+prepare_for_github () {
   echo "Preparing to publish packge to Github..."
 
   if [ "$NPM_PKG_TOKEN" = "" ]; then
@@ -59,7 +59,7 @@ function prepare_for_github {
   echo "//npm.pkg.github.com/:_authToken=$NPM_PKG_TOKEN" > .npmrc
 }
 
-function prepare_for_npm {
+prepare_for_npm () {
   echo "Preparing to publish packge to npmjs.com..."
 
   if npm whoami > /dev/null 2>&1; echo $? | grep -Eq '1'; then
