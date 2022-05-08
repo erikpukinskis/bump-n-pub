@@ -10,6 +10,16 @@ running `npm publish`, and pushing the new version to Github...
 npx bump-n-pub [major | minor | patch | premajor | preminor | prepatch | prerelease]
 ```
 
+You can also publish to the Github registry instead of the npmjs.com one, by
+setting the `$NPM_PKG_TOKEN` environment variable and using the --github flag:
+
+```
+NPM_PKG_TOKEN=[personal access token] npx bump-n-pub minor --github
+```
+
+You can make a personal access token [in your Github settings](https://github.com/settings/tokens).
+It must have the `write:packages` scope.
+
 ### What it does
 1. Logs you in to NPM if needed
 2. Makes sure your working directory is clean
