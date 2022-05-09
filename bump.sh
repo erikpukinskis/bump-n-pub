@@ -1,75 +1,29 @@
 #/bin/bash
-increment=$1
-flag=$2
+
+
+##################
+# Helper functions
 
 usage() {
   echo "Usage: npx bump-n-pub newversion [--github] [--dry-run]"
   echo ""
   echo "Options:"
-  echo "  newversion           How much to bump:"
-  echo "                         major — breaking change"
-  echo "                         minor — new feature"
-  echo "                         patch — bug fix"
-  echo "                         premajor - etc"
-  echo "                         preminor"
-  echo "                         prepatch"
-  echo "                         prerelease"
+  echo "  newversion    How much to bump:"
+  echo "                   major — breaking change"
+  echo "                   minor — new feature"
+  echo "                   patch — bug fix"
+  echo "                   premajor - etc"
+  echo "                   preminor"
+  echo "                   prepatch"
+  echo "                   prerelease"
+  echo "  --github      publish to the Github registry instead of the npmjs.com one"
+  echo "  --dry-run     Don't actually _do_ the release, just check things out"
   exit 1
 }
 
-print_help () { echo "Option -f \${file}: Set file"; exit 0; }
-fail () { echo "Error: $*" >&2; exit 1; }
-unset file
-
-OPTIND=1
-while getopts :f:h-: option
-do case $option in
-       h ) print_help;;
-       f ) file=$OPTARG;;
-       - ) case $OPTARG in
-               file ) fail "Option \"$OPTARG\" missing argument";;
-               file=* ) file=${OPTARG#*=};;
-               help ) print_help;;
-               help=* ) fail "Option \"${OPTARG%%=*}\" has unexpected argument";;
-               * ) fail "Unknown long option \"${OPTARG%%=*}\"";;
-            esac;;
-        '?' ) fail "Unknown short option \"$OPTARG\"";;
-        : ) fail "Short option \"$OPTARG\" missing argument";;
-        * ) fail "Bad state in getopts (OPTARG=\"$OPTARG\")";;
-   esac
-done
-shift $((OPTIND-1))
-
-echo "File is ${file-unset}"
-
-for (( i=1; i<=$#; ++i ))
-do printf "\$@[%d]=\"%s\"\n" $i "${@:i:1}"
-done
-
-
-exit
-
-##################
-# Helper functions
-
-usage () {
-  echo ""
-  echo "Publish to npmjs.com:"
-  echo "npx bump-n-pub [major | minor | patch | premajor | preminor | prepatch | prerelease]"
-  echo ""
-  echo "Publish to Github:"
-  echo "npx bump-n-pub [major | minor etc...] --github"
-}
-
 generic_validation () {
-  if [ $arg_count -eq 0 ]; then
+  if ! [ $increment ]; then
     echo "Error: Must provide a level"
-    usage
-    exit 1
-  fi
-
-  if echo $newversion | grep -Eqv '^(major|minor|patch|premajor|preminor|prepatch|prerelease)$'; then
-    echo "Error: Invalid version: $1"
     usage
     exit 1
   fi
@@ -97,12 +51,16 @@ prepare_for_github () {
     echo "Error: No \$NPM_PKG_TOKEN found in env"
   fi
 
-  if [ test -f ".npmrc" ]; then
+  if test -f ".npmrc"; then
     echo "Error: To publish to Github, this script must write an .npmrc with an auth token but an .npmrc already exists"
     exit 1
   fi
 
   echo "//npm.pkg.github.com/:_authToken=$NPM_PKG_TOKEN" > .npmrc
+}
+
+clean_up_after_github () {
+  rm .npmrc
 }
 
 prepare_for_npm () {
@@ -117,15 +75,54 @@ prepare_for_npm () {
 ########
 # Script
 
+args=$(echo $@ | tr " " "\n")
+github=0
+dryrun=0
+for arg in $args
+do
+  case $arg in
+    major|minor)
+      increment=$arg
+      ;;
+    "--github")
+      github=1
+      ;;
+    "--dry-run")
+      dryrun=1
+  esac
+done
+
+# echo "increment $increment"
+# echo "--github $github"
+# echo "--dry-run $dryrun"
+
+if [ -z "$increment" ]
+then
+  usage
+  exit 1
+fi
+
 generic_validation
 
-if [ "$flag" = "--github" ]; then
+
+if  [ $github -eq 1 ]; then
+  echo "preparing for github $github"
   prepare_for_github
 else
   prepare_for_npm
 fi
 
-version=`npm version $newversion`
+if [ $dryrun -eq 1 ]; then
+  version=$(npm version $increment)
+  echo ""
+  echo "✨ Dry run! ✨ version would have been $version"
+  echo ""
+  git tag -d $version
+  git reset --hard HEAD^
+  exit 1
+fi
+
+version=$(npm version $increment)
 
 git commit -m $version
 npx json -f package.json -I -e "delete this.devDependencies"
@@ -133,3 +130,7 @@ npm publish
 git checkout -- package.json
 git push
 git push origin $version
+
+if  [ $github -eq 1 ]; then
+  clean_up_after_github
+fi
