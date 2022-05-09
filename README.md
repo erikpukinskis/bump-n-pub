@@ -33,8 +33,7 @@ npx bump-n-pub major dry-run
     - Creates a git tag "vX.Y.Z"
     - Updates your package.json version to "X.Y.Z"
     - Commits that change
-4. Runs npm publish
-5. Runs git push
-
-### Future
-- [ ] Push git tags
+4. (--github only) copies your auth token into an .npmrc
+5. Runs npm publish
+6. Runs git push
+7. Pushes the new tag
