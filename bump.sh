@@ -50,11 +50,6 @@ prepare_for_github () {
   if [ "$NPM_PKG_TOKEN" = "" ]; then
     echo "Error: No \$NPM_PKG_TOKEN found in env"
   fi
-
-  if test -f ".npmrc"; then
-    echo "Error: To publish to Github, this script must write an .npmrc with an auth token but an .npmrc already exists"
-    exit 1
-  fi
 }
 
 npmrc=0
