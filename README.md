@@ -6,12 +6,12 @@ running `npm publish`, and pushing the new version to Github...
 
 ### Usage
 
-```bash
-npx bump-n-pub [major | minor | patch | premajor | preminor | prepatch | prerelease]
+```
+npx bump-n-pub major|minor|patch|premajor|preminor|prepatch|prerelease [--github] [--dry-run]
 ```
 
-You can also publish to the Github registry instead of the npmjs.com one, by
-setting the `$NPM_PKG_TOKEN` environment variable and using the --github flag:
+You can publish to the Github registry instead of the npmjs.com one, by setting
+the `$NPM_PKG_TOKEN` environment variable and using the --github flag:
 
 ```
 NPM_PKG_TOKEN=[personal access token] npx bump-n-pub minor --github
@@ -19,6 +19,12 @@ NPM_PKG_TOKEN=[personal access token] npx bump-n-pub minor --github
 
 You can make a personal access token [in your Github settings](https://github.com/settings/tokens).
 It must have the `write:packages` scope.
+
+Do a dry-run by appending --dry-run:
+
+```
+npx bump-n-pub major dry-run
+```
 
 ### What it does
 1. Logs you in to NPM if needed
