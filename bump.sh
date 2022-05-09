@@ -89,6 +89,10 @@ do
       ;;
     "--dry-run")
       dryrun=1
+      ;;
+    *)
+      echo "Error: Unrecogied option $arg"
+      usage
   esac
 done
 
