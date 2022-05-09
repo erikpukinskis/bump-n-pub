@@ -55,11 +55,13 @@ prepare_for_github () {
     echo "Error: To publish to Github, this script must write an .npmrc with an auth token but an .npmrc already exists"
     exit 1
   fi
+}
 
+copy_auth () {
   echo "//npm.pkg.github.com/:_authToken=$NPM_PKG_TOKEN" > .npmrc
 }
 
-clean_up_after_github () {
+clear_auth () {
   rm .npmrc
 }
 
@@ -133,7 +135,15 @@ version=$(npm version $increment)
 
 git commit -m $version
 npx json -f package.json -I -e "delete this.devDependencies"
-npm publish
+
+if  [ $github -eq 1 ]; then
+  copy_auth
+  npm publish
+  clear_auth
+else
+  npm publish
+fi
+
 git checkout -- package.json
 git push
 git push origin $version
