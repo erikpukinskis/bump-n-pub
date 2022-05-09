@@ -1,6 +1,6 @@
 {
   "name": "bump-n-pub",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "bin": "bump.sh",
   "repository": {
     "type": "git",
