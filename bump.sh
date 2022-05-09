@@ -112,7 +112,6 @@ generic_validation
 
 
 if  [ $github -eq 1 ]; then
-  echo "preparing for github $github"
   prepare_for_github
 else
   prepare_for_npm
