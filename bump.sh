@@ -1,34 +1,54 @@
 #/bin/bash
-newversion=$1
+increment=$1
 flag=$2
-arg_count=$#
 
-usage() { echo "Usage: $0 [-s <45|90>] [-p <string>]" 1>&2; exit 1; }
+usage() {
+  echo "Usage: npx bump-n-pub newversion [--github] [--dry-run]"
+  echo ""
+  echo "Options:"
+  echo "  newversion           How much to bump:"
+  echo "                         major — breaking change"
+  echo "                         minor — new feature"
+  echo "                         patch — bug fix"
+  echo "                         premajor - etc"
+  echo "                         preminor"
+  echo "                         prepatch"
+  echo "                         prerelease"
+  exit 1
+}
 
-while getopts ":s:p:" o; do
-    case "${o}" in
-        s)
-            s=${OPTARG}
-            ((s == 45 || s == 90)) || usage
-            ;;
-        p)
-            p=${OPTARG}
-            ;;
-        *)
-            usage
-            ;;
-    esac
+print_help () { echo "Option -f \${file}: Set file"; exit 0; }
+fail () { echo "Error: $*" >&2; exit 1; }
+unset file
+
+OPTIND=1
+while getopts :f:h-: option
+do case $option in
+       h ) print_help;;
+       f ) file=$OPTARG;;
+       - ) case $OPTARG in
+               file ) fail "Option \"$OPTARG\" missing argument";;
+               file=* ) file=${OPTARG#*=};;
+               help ) print_help;;
+               help=* ) fail "Option \"${OPTARG%%=*}\" has unexpected argument";;
+               * ) fail "Unknown long option \"${OPTARG%%=*}\"";;
+            esac;;
+        '?' ) fail "Unknown short option \"$OPTARG\"";;
+        : ) fail "Short option \"$OPTARG\" missing argument";;
+        * ) fail "Bad state in getopts (OPTARG=\"$OPTARG\")";;
+   esac
 done
 shift $((OPTIND-1))
 
-if [ -z "${s}" ] || [ -z "${p}" ]; then
-    usage
-fi
+echo "File is ${file-unset}"
 
-echo "s = ${s}"
-echo "p = ${p}"
+for (( i=1; i<=$#; ++i ))
+do printf "\$@[%d]=\"%s\"\n" $i "${@:i:1}"
+done
+
 
 exit
+
 ##################
 # Helper functions
 
