@@ -57,12 +57,21 @@ prepare_for_github () {
   fi
 }
 
+npmrc=0
+
 copy_auth () {
-  echo "//npm.pkg.github.com/:_authToken=$NPM_PKG_TOKEN" > .npmrc
+  if test -f ".npmrc"; then
+    npmrc=$(cat .npmrc)
+  fi
+  echo "//npm.pkg.github.com/:_authToken=$NPM_PKG_TOKEN" >> .npmrc
 }
 
 clear_auth () {
-  rm .npmrc
+  if ! [ $npmrc -eq 0 ]; then
+    rm .npmrc
+  else
+    echo $npmrc > .npmrc
+  fi
 }
 
 prepare_for_npm () {
