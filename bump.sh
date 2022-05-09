@@ -119,6 +119,9 @@ if [ $dryrun -eq 1 ]; then
   echo ""
   git tag -d $version
   git reset --hard HEAD^
+  if  [ $github -eq 1 ]; then
+    clean_up_after_github
+  fi
   exit 1
 fi
 
