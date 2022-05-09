@@ -52,19 +52,22 @@ prepare_for_github () {
   fi
 }
 
-npmrc=0
+npmrc_existed=0
 
 copy_auth () {
   if test -f ".npmrc"; then
+    npmrc_existed=1
     npmrc=$(cat .npmrc)
   fi
   echo "//npm.pkg.github.com/:_authToken=$NPM_PKG_TOKEN" >> .npmrc
 }
 
 clear_auth () {
-  if ! [ $npmrc -eq 0 ]; then
+  if $npmrc_existed -eq 1; then
+    echo "npmrc existed"
     rm .npmrc
   else
+    echo "npmrc did not exist"
     echo $npmrc > .npmrc
   fi
 }
