@@ -143,7 +143,3 @@ fi
 git checkout -- package.json
 git push
 git push origin $version
-
-if  [ $github -eq 1 ]; then
-  clean_up_after_github
-fi
