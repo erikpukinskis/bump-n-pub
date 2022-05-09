@@ -1,5 +1,10 @@
 {
   "name": "bump-n-pub",
   "version": "0.11.0",
-  "bin": "bump.sh"
+  "bin": "bump.sh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/erikpukinskis/bump-n-pub.git"
+  },
+  "homepage": "https://github.com/erikpukinskis/bump-n-pub"
 }
