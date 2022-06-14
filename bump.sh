@@ -122,6 +122,7 @@ then
       increment="prepatch"
       ;;
   esac
+  preid="--preid $preid"
 fi
 
 # echo "increment $increment"
@@ -144,8 +145,9 @@ else
   prepare_for_npm
 fi
 
+version=$(npm version $increment $preid)
+
 if [ $dryrun -eq 1 ]; then
-  version=$(npm version $increment)
   echo ""
   echo "✨ Dry run! ✨ version would have been $version"
   echo ""
@@ -153,8 +155,6 @@ if [ $dryrun -eq 1 ]; then
   git reset --hard HEAD^
   exit 1
 fi
-
-version=$(npm version $increment)
 
 git commit -m $version
 npx json -f package.json -I -e "delete this.devDependencies"
