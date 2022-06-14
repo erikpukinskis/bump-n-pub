@@ -90,7 +90,7 @@ dryrun=0
 for arg in $args
 do
   case $arg in
-    major|minor)
+    major|minor|patch|premajor|preminor|prepatch|prerelease)
       increment=$arg
       ;;
     "--github")
