@@ -12,10 +12,8 @@ usage() {
   echo "                   major — breaking change"
   echo "                   minor — new feature"
   echo "                   patch — bug fix"
-  echo "                   premajor - etc"
-  echo "                   preminor"
-  echo "                   prepatch"
-  echo "                   prerelease"
+  echo "  --alpha       do an alpha prerelease of the new version"
+  echo "  --beta        do a beta prerelease of the new version"
   echo "  --github      publish to the Github registry instead of the npmjs.com one"
   echo "  --dry-run     Don't actually _do_ the release, just check things out"
   exit 1
@@ -90,8 +88,14 @@ dryrun=0
 for arg in $args
 do
   case $arg in
-    major|minor|patch|premajor|preminor|prepatch|prerelease)
+    major|minor|patch)
       increment=$arg
+      ;;
+    "--alpha")
+      preid="alpha"
+      ;;
+    "--beta")
+      preid="beta"
       ;;
     "--github")
       github=1
@@ -105,9 +109,25 @@ do
   esac
 done
 
+if ! [ -z "$preid" ]
+then
+  case $increment in
+    major)
+      increment="premajor"
+      ;;
+    minor)
+      increment="preminor"
+      ;;
+    patch)
+      increment="prepatch"
+      ;;
+  esac
+fi
+
 # echo "increment $increment"
-# echo "--github $github"
-# echo "--dry-run $dryrun"
+# echo "github $github"
+# echo "dry-run $dryrun"
+# echo "preid $preid"
 
 if [ -z "$increment" ]
 then

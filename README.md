@@ -7,7 +7,7 @@ running `npm publish`, and pushing the new version to Github...
 ### Usage
 
 ```
-npx bump-n-pub major|minor|patch|premajor|preminor|prepatch|prerelease [--github] [--dry-run]
+npx bump-n-pub major|minor|patch|premajor|preminor|prepatch|prerelease [--github] [--dry-run] [--alpha] [beta]
 ```
 
 You can publish to the Github registry instead of the npmjs.com one, by setting
@@ -25,6 +25,14 @@ Do a dry-run by appending --dry-run:
 ```
 npx bump-n-pub major dry-run
 ```
+
+Alpha and beta prereleases can be done by adding those flags. For example if the version is at `1.1.3` by running...
+
+```
+npx bump-n-pub minor --alpha
+```
+
+...the new version would be `1.2.0-alpha.0`
 
 ### What it does
 1. Logs you in to NPM if needed
