@@ -122,7 +122,8 @@ then
       increment="prepatch"
       ;;
   esac
-  preid="--preid $preid"
+  preidflag="--preid $preid"
+  tagflag="--tag next"
 fi
 
 # echo "increment $increment"
@@ -138,14 +139,13 @@ fi
 
 generic_validation
 
-
 if  [ $github -eq 1 ]; then
   prepare_for_github
 else
   prepare_for_npm
 fi
 
-version=$(npm version $increment $preid)
+version=$(npm version $increment $preidflag)
 
 if [ $dryrun -eq 1 ]; then
   echo ""
@@ -161,7 +161,7 @@ npx json -f package.json -I -e "delete this.devDependencies"
 
 if  [ $github -eq 1 ]; then
   copy_auth
-  npm publish
+  npm publish $tagflag
   clear_auth
 else
   npm publish
