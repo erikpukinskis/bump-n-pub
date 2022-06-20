@@ -176,12 +176,16 @@ fi
 git commit -m $version
 npx json -f package.json -I -e "delete this.devDependencies"
 
+publish() {
+  npm publish $tagflag
+}
+
 if  [ $github -eq 1 ]; then
   copy_auth
-  npm publish $tagflag
+  publish
   clear_auth
 else
-  npm publish
+  publish
 fi
 
 git checkout -- package.json
