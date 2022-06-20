@@ -48,11 +48,14 @@ npx bump-n-pub minor --alpha
 ### What it does
 1. Logs you in to NPM if needed
 2. Makes sure your working directory is clean
-3. Runs `npm version [major | minor | etc...]`
+3. Makes sure you can fast forward
+4. Runs `npm version [major | minor | etc...]`
     - Creates a git tag "vX.Y.Z"
     - Updates your package.json version to "X.Y.Z"
     - Commits that change
-4. (--github only) copies your auth token into an .npmrc
-5. Runs npm publish
-6. Runs git push
-7. Pushes the new tag
+5. [--github only] copies your auth token into an .npmrc
+6. Confirms the version is correct before publishing
+7. Runs npm publish
+8. Tags your release as @latest or @next appropriately
+9. Runs git push
+10. Pushes the new tag

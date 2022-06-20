@@ -38,7 +38,9 @@ generic_validation () {
   out=$( git merge-base --is-ancestor origin/$branch_name HEAD )
 
   if [ $? -eq 1 ]; then
-    echo "Error: There are changes on origin/$branch_name. This script can only fast forward the remote branch. Try git pull --rebase"
+    echo "Error: There are changes on origin/$branch_name. This script can only fast forward the remote branch."
+    echo ""
+    echo "Try git pull --rebase or git push -f"
     exit 1
   fi
 }
@@ -146,17 +148,29 @@ else
   prepare_for_npm
 fi
 
-echo running: npm version $increment $preidflag
-
 version=$(npm version $increment $preidflag)
+
+if [ $dryrun -eq 0 ]; then
+  read -n1 -p "New version will be $version. Continue? (Y/n) " confirm
+fi
+
+abort() {
+  echo ""
+  git tag -d $version
+  git reset --hard HEAD^
+  exit 1
+}
+
+echo $confirm | grep '^[Yy]\?$'
+if [ $? -eq 1 ]; then
+  abort
+fi
 
 if [ $dryrun -eq 1 ]; then
   echo ""
   echo "✨ Dry run! ✨ version would have been $version"
   echo ""
-  git tag -d $version
-  git reset --hard HEAD^
-  exit 1
+  abort
 fi
 
 git commit -m $version
