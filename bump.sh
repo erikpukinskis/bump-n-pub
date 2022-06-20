@@ -152,28 +152,27 @@ version=$(npm version $increment $preidflag)
 
 if [ $dryrun -eq 0 ]; then
   read -n1 -p "New version will be $version. Continue? (Y/n) " confirm
+  echo ""
 fi
 
-abort() {
-  echo ""
+cleanup() {
   git tag -d $version
   git reset --hard HEAD^
   exit 1
 }
 
-echo $confirm | grep '^[Yy]\?$'
-if [ $? -eq 1 ]; then
-  abort
+if ! echo $confirm | grep '^[Yy]\?$'; then
+  echo "Cleaning up..."
+  cleanup
 fi
 
 if [ $dryrun -eq 1 ]; then
   echo ""
   echo "✨ Dry run! ✨ version would have been $version"
   echo ""
-  abort
+  cleanup
 fi
 
-git commit -m $version
 npx json -f package.json -I -e "delete this.devDependencies"
 
 publish() {
