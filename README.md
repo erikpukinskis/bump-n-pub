@@ -7,13 +7,14 @@ running `npm publish`, and pushing the new version to Github...
 ### Usage
 
 ```
-Usage: npx bump-n-pub newversion [--github] [--dry-run] [--alpha] [--beta]
+Usage: npx bump-n-pub increment [--github] [--dry-run] [--alpha] [--beta]
 
 Options:
-  newversion    How much to bump:
+  increment    How much to bump:
                    major — breaking change
                    minor — new feature
                    patch — bug fix
+                   prerelease — beta.1, beta.2, etc
   --alpha       do an alpha prerelease of the new version
   --beta        do a beta prerelease of the new version
   --github      publish to the Github registry instead of the npmjs.com one

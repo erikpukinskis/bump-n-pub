@@ -5,13 +5,14 @@
 # Helper functions
 
 usage() {
-  echo "Usage: npx bump-n-pub newversion [--github] [--dry-run] [--alpha] [--beta]"
+  echo "Usage: npx bump-n-pub increment [--github] [--dry-run] [--alpha] [--beta]"
   echo ""
   echo "Options:"
-  echo "  newversion    How much to bump:"
+  echo "  increment    How much to bump:"
   echo "                   major — breaking change"
   echo "                   minor — new feature"
   echo "                   patch — bug fix"
+  echo "                   prerelease — beta.1, beta.2, etc"
   echo "  --alpha       do an alpha prerelease of the new version"
   echo "  --beta        do a beta prerelease of the new version"
   echo "  --github      publish to the Github registry instead of the npmjs.com one"
@@ -88,7 +89,7 @@ dryrun=0
 for arg in $args
 do
   case $arg in
-    major|minor|patch)
+    major|minor|patch|prerelease)
       increment=$arg
       ;;
     "--alpha")
@@ -144,6 +145,8 @@ if  [ $github -eq 1 ]; then
 else
   prepare_for_npm
 fi
+
+echo running: npm version $increment $preidflag
 
 version=$(npm version $increment $preidflag)
 
