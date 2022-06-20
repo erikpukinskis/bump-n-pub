@@ -55,7 +55,10 @@ npx bump-n-pub minor --alpha
     - Commits that change
 5. [--github only] copies your auth token into an .npmrc
 6. Confirms the version is correct before publishing
-7. Runs npm publish
-8. Tags your release as @latest or @next appropriately
-9. Runs git push
-10. Pushes the new tag
+7. Temporarily removes the `devDependencies` from your package.json so package consumers don't need to install them
+8. Runs npm publish
+9. Tags your release as @latest or @next appropriately
+10. Runs git push
+11. Pushes the new tag
+
+If any of that fails, it tries to clean up gracefully.
