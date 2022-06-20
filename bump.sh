@@ -5,7 +5,7 @@
 # Helper functions
 
 usage() {
-  echo "Usage: npx bump-n-pub newversion [--github] [--dry-run]"
+  echo "Usage: npx bump-n-pub newversion [--github] [--dry-run] [--alpha] [--beta]"
   echo ""
   echo "Options:"
   echo "  newversion    How much to bump:"
