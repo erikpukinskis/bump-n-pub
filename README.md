@@ -62,3 +62,8 @@ npx bump-n-pub minor --alpha
 11. Pushes the new tag
 
 If any of that fails, it tries to clean up gracefully.
+
+### Todo
+* [ ] Call it `pre` instead of `prerelease`? Or just presume the prerelease increment if you omit it?
+* [ ] Rewind the commit & tag if publish fails
+* [ ] Don't push prerelease tags to Github?
