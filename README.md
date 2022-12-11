@@ -67,3 +67,4 @@ If any of that fails, it tries to clean up gracefully.
 * [ ] Call it `pre` instead of `prerelease`? Or just presume the prerelease increment if you omit it?
 * [ ] Rewind the commit & tag if publish fails
 * [ ] Don't push prerelease tags to Github?
+* [ ] Don't leave package.json in a bad state when trying to publish to github but not authed
