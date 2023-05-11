@@ -35,7 +35,8 @@ generic_validation () {
 
   git fetch
   branch_name=`git symbolic-ref --short HEAD`
-  out=$( git merge-base --is-ancestor origin/$branch_name HEAD )
+  set +e
+  git merge-base --is-ancestor origin/$branch_name HEAD
 
   if [ $? -eq 1 ]; then
     echo "Error: There are changes on origin/$branch_name. This script can only fast forward the remote branch."
@@ -43,6 +44,8 @@ generic_validation () {
     echo "Try git pull --rebase or git push -f"
     exit 1
   fi
+
+  set -e
 }
 
 prepare_for_github () {
