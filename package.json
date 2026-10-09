@@ -1,7 +1,34 @@
 {
   "name": "bump-n-pub",
-  "version": "0.29.0",
-  "bin": "bump.sh",
+  "version": "0.30.0",
+  "description": "Release policy and publishing commands for npm packages and Yarn workspaces",
+  "type": "module",
+  "bin": "./dist/cli.js",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": "^24.0.0"
+  },
+  "packageManager": "yarn@4.11.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && chmod +x dist/cli.js",
+    "check:types": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "prepack": "yarn build"
+  },
+  "dependencies": {
+    "semver": "^7.7.3",
+    "yaml": "^2.8.2",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/semver": "^7.7.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.7"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/erikpukinskis/bump-n-pub.git"
