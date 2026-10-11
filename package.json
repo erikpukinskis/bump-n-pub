@@ -19,6 +19,7 @@
     "prepack": "yarn build"
   },
   "dependencies": {
+    "commander": "^15.0.0",
     "semver": "^7.7.3",
     "zod": "^4.1.12"
   },
