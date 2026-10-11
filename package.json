@@ -1,7 +1,7 @@
 {
   "name": "bump-n-pub",
   "version": "0.30.0",
-  "description": "Release policy and publishing commands for npm packages and Yarn workspaces",
+  "description": "Publish npm packages and prepare MultiplayerDB service releases",
   "type": "module",
   "bin": "./dist/cli.js",
   "files": [
@@ -13,14 +13,13 @@
   },
   "packageManager": "yarn@4.11.0",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json && chmod +x dist/cli.js",
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && chmod +x dist/cli.js",
     "check:types": "tsc --noEmit -p tsconfig.json",
-    "test": "vitest run",
+    "test": "yarn build && vitest run",
     "prepack": "yarn build"
   },
   "dependencies": {
     "semver": "^7.7.3",
-    "yaml": "^2.8.2",
     "zod": "^4.1.12"
   },
   "devDependencies": {

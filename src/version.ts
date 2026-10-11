@@ -1,18 +1,14 @@
 import semver, { type ReleaseType } from "semver";
-import { z } from "zod";
 
-import { CliError } from "./errors.js";
+export type ReleaseIncrement = "major" | "minor" | "patch" | "prerelease";
+export type PrereleaseId = "alpha" | "beta";
 
-export const ReleaseIncrementSchema = z.enum([
-  "major",
-  "minor",
-  "patch",
-  "prerelease",
-]);
-export type ReleaseIncrement = z.infer<typeof ReleaseIncrementSchema>;
-
-export const PrereleaseIdSchema = z.enum(["alpha", "beta"]);
-export type PrereleaseId = z.infer<typeof PrereleaseIdSchema>;
+export function releaseType(
+  increment: ReleaseIncrement,
+  prereleaseId?: PrereleaseId,
+): ReleaseType {
+  return prereleaseId && increment !== "prerelease" ? `pre${increment}` : increment;
+}
 
 export function calculateVersion(
   currentVersion: string,
@@ -20,19 +16,16 @@ export function calculateVersion(
   prereleaseId?: PrereleaseId,
 ): string {
   if (!semver.valid(currentVersion)) {
-    throw new CliError(`${currentVersion} is not a valid semantic version`);
+    throw new Error(`${currentVersion} is not a valid semantic version`);
   }
 
-  let release: ReleaseType = increment;
-  if (prereleaseId && increment !== "prerelease") {
-    release = `pre${increment}`;
-  }
+  const release = releaseType(increment, prereleaseId);
 
   const version = prereleaseId
     ? semver.inc(currentVersion, release, prereleaseId)
     : semver.inc(currentVersion, release);
   if (!version) {
-    throw new CliError(`Could not bump ${currentVersion} with ${release}`);
+    throw new Error(`Could not bump ${currentVersion} with ${release}`);
   }
 
   return version;
@@ -40,7 +33,7 @@ export function calculateVersion(
 
 export function isPrerelease(version: string): boolean {
   if (!semver.valid(version)) {
-    throw new CliError(`${version} is not a valid semantic version`);
+    throw new Error(`${version} is not a valid semantic version`);
   }
   return semver.prerelease(version) !== null;
 }
