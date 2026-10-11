@@ -1,70 +1,90 @@
-Perhaps you are lazy, and don't want to have to do the work of manually tagging
-a release, updating your package.json, checking if you're logged in to NPM,
-running `npm publish`, and pushing the new version to Github...
+# bump-n-pub
 
-**bump-n-pub** does all of that for you in one command:
+`bump-n-pub` publishes an npm package manually and provides the small release
+commands shared by MultiplayerDB services. It is a Node 24 ES-module CLI.
 
-### Usage
+## Manual publishing
 
-```
-Usage: npx bump-n-pub increment [--github] [--dry-run] [--alpha] [--beta]
+Pass a semantic-version increment as the first argument:
 
-Options:
-  increment    How much to bump:
-                   major — breaking change
-                   minor — new feature
-                   patch — bug fix
-                   prerelease — beta.1, beta.2, etc
-  --alpha       do an alpha prerelease of the new version
-  --beta        do a beta prerelease of the new version
-  --github      publish to the Github registry instead of the npmjs.com one
-  --dry-run     Don't actually _do_ the release, just check things out
+```text
+bump-n-pub <major|minor|patch|prerelease> [--dry-run] [--alpha|--beta]
 ```
 
-You can publish to the Github registry instead of the npmjs.com one, by setting
-the `$NPM_PKG_TOKEN` environment variable and using the --github flag:
+The command requires a clean worktree and a current branch whose remote can be
+fast-forwarded. It checks npm access, delegates the version commit and tag to
+`npm version`, asks for confirmation, publishes the root package, then pushes
+the commit and tag. Prereleases use the `next` npm distribution tag.
 
-```
-NPM_PKG_TOKEN=[personal access token] npx bump-n-pub minor --github
-```
+`--dry-run` creates and then removes the local version commit and tag without
+publishing or pushing. Declining the confirmation does the same. Once an
+`npm publish` attempt starts, the commit and tag are retained so an ambiguous
+registry or network failure can be recovered manually.
 
-You can make a personal access token [in your Github settings](https://github.com/settings/tokens).
-It must have the `write:packages` scope.
+The package's standard `publishConfig.registry` selects its publication
+registry. When that field is absent, npm uses its normal configured registry.
+Registry credentials remain in npm configuration or environment variables.
 
-Do a dry-run by appending --dry-run:
-
-```
-npx bump-n-pub major dry-run
-```
-
-Alpha and beta prereleases can be done by adding those flags. For example if the version is at `1.1.3` by running...
-
-```
-npx bump-n-pub minor --alpha
+```sh
+yarn bump-n-pub minor
+yarn bump-n-pub patch --beta
+yarn bump-n-pub major --dry-run
 ```
 
-...the new version would be `1.2.0-alpha.0`
+## Coordinated service commands
 
-### What it does
-1. Logs you in to NPM if needed
-2. Makes sure your working directory is clean
-3. Makes sure you can fast forward
-4. Runs `npm version [major | minor | etc...]`
-    - Creates a git tag "vX.Y.Z"
-    - Updates your package.json version to "X.Y.Z"
-    - Commits that change
-5. [--github only] copies your auth token into an .npmrc
-6. Confirms the version is correct before publishing
-7. Temporarily removes the `devDependencies` from your package.json so package consumers don't need to install them
-8. Runs npm publish
-9. Tags your release as @latest or @next appropriately
-10. Runs git push
-11. Pushes the new tag
+These commands support a publishable root package and, optionally, a
+publishable `client` workspace declared exactly as `"client"`. The root and
+client must have matching versions. Other workspace layouts are rejected.
 
-If any of that fails, it tries to clean up gracefully.
+### Bump only
 
-### Todo
-* [ ] Call it `pre` instead of `prerelease`? Or just presume the prerelease increment if you omit it?
-* [ ] Rewind the commit & tag if publish fails
-* [ ] Don't push prerelease tags to Github?
-* [ ] Don't leave package.json in a bad state when trying to publish to github but not authed
+```text
+bump-n-pub <major|minor|patch|prerelease> --bump-only [--dry-run] [--alpha|--beta]
+```
+
+`--bump-only` updates the root and optional client versions and commits their
+manifests together. It does not fetch, authenticate, prompt, tag, publish, or
+push. With `--dry-run`, it validates the project and prints the calculated
+version without changing files.
+
+### Check private registries
+
+```text
+bump-n-pub check-registries
+```
+
+This reads the configured scopes from `yarn config get npmScopes --json`, then
+checks root dependencies and development dependencies belonging to those
+scopes with `yarn npm info`. Successful queries are quiet. Yarn's output is
+shown unchanged when a query fails.
+
+### Prepare a workflow release
+
+```text
+bump-n-pub prepare
+```
+
+`prepare` requires `GITHUB_REF_NAME`. Stable versions also require
+`PUBLISHING_BRANCHES`, a JSON array of branch names. Prereleases may publish
+from any branch. Every run queries the exact root and optional client version,
+including runs on branches that cannot publish, and rejects a partially
+published release group.
+
+Each manifest's `publishConfig.registry` is used for its version query. If
+`NODE_AUTH_TOKEN` is set, it is supplied to npm for that registry. The command
+prints exactly two lines, suitable for redirecting to `GITHUB_OUTPUT`:
+
+```text
+package_version=1.4.0
+should_publish=true
+```
+
+### Inspect package contents
+
+```text
+bump-n-pub check-pack
+```
+
+`check-pack` runs `yarn pack --dry-run` in the root and optional client
+directories. It does not build or edit either package.
